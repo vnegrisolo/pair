@@ -1,6 +1,7 @@
 #!/bin/sh
 
 pair() {
-  echo "pair running";
-  git --version;
+  if [ "${1}" == "commit" ]; then
+    git $@;
+  fi
 }

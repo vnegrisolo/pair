@@ -2,11 +2,15 @@ require 'spec_helper'
 
 RSpec.describe 'pair' do
 
-  let(:git_stub)  { 'git() { echo "GIT={{$@}}"; }' }
+  subject(:command)   { [load_pair, git_stub, 'pair'].join('; ') }
   let(:load_pair) { '. pair.sh' }
-  let(:command)   { [load_pair, git_stub, 'pair'].join('; ') }
+  let(:git_stub) { 'git() { echo "GIT={{$@}}"; }' }
 
-  it 'prints pair status' do
-    expect(`#{command}`).to eq("pair running\nGIT={{--version}}\n")
+  context 'when pair commits' do
+    subject { `#{command} commit --amend` }
+
+    it 'call git commit with same params' do
+      is_expected.to include("GIT={{commit --amend}}")
+    end
   end
 end
