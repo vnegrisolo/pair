@@ -38,13 +38,37 @@ pair_reset() {
   git config pair.committer.email ""
 }
 
+pair_commit() {
+  author_name="`git config --get pair.author.name`"
+  author_email="`git config --get pair.author.email`"
+  committer_name="`git config --get pair.committer.name`"
+  committer_email="`git config --get pair.committer.email`"
+
+  if [ -n "${author_email}" ]; then
+    git config user.name "${author_name}"
+    git config user.email "${author_email}"
+  fi
+
+  git_author=""
+  if [ -n "${committer_email}" ]; then
+    git_author="--author=\"${committer_name} <${committer_email}>\""
+
+    git config pair.author.name "${committer_name}"
+    git config pair.author.email "${committer_email}"
+    git config pair.committer.name "${author_name}"
+    git config pair.committer.email "${author_email}"
+  fi
+
+  git "$@" "${git_author}"
+}
+
 pair() {
   if [ -z "${1}" ]; then
     pair_status
   elif [ "${1}" == "reset" ]; then
     pair_reset $@
   elif [ "${1}" == "commit" ]; then
-    git $@;
+    pair_commit $@
   else
     pair_configure $@
   fi

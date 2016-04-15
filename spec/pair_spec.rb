@@ -55,11 +55,35 @@ RSpec.describe 'pair' do
   end
 
   describe 'proxy commits' do
-    context 'when pair commits' do
+    context 'when no pair is set yet' do
       subject { `#{command} commit --amend` }
 
       it 'call git commit with same params' do
-        is_expected.to include('GIT={{commit --amend}}')
+        is_expected.to include('GIT={{commit --amend')
+      end
+    end
+
+    context 'when pair is actually just one person' do
+      subject { `#{command} vnegrisolo; pair commit --amend` }
+
+      it 'call git commit with same params' do
+        is_expected.to include('GIT={{commit --amend --author=')
+      end
+    end
+
+    context 'when pair is actually just one person' do
+      subject { `#{command} vnegrisolo hashrocketer; pair commit --amend` }
+
+      it 'call git commit with same params' do
+        is_expected.to include('GIT={{commit --amend --author=')
+      end
+
+      context 'when a second commit is made' do
+        subject { `#{command} vnegrisolo hashrocketer; pair commit --amend` }
+
+        it 'calls git commit with original author and committer swapped' do
+          is_expected.to include('GIT={{commit --amend --author=')
+        end
       end
     end
   end
