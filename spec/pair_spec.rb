@@ -6,7 +6,20 @@ RSpec.describe 'pair' do
   let(:load_pair) { '. pair.sh' }
   let(:git_stub) { 'git() { echo "GIT={{$@}}"; }' }
   let(:github_user_json) { File.read('spec/fixtures/github_user.json') }
-  let(:curl_stub) { "curl() { echo 'CURL={{$@}}'; echo '#{github_user_json}'; }" }
+  let(:curl_stub) { "curl() { echo '#{github_user_json}'; }" }
+
+  describe 'status' do
+    subject { `#{command}` }
+
+    it 'prints the author and committer' do
+      is_expected.to include('Author')
+      is_expected.to include('GIT={{config --get pair.author.email}}')
+      is_expected.to include('GIT={{config --get pair.author.name}}')
+      is_expected.to include('Committer')
+      is_expected.to include('GIT={{config --get pair.committer.email}}')
+      is_expected.to include('GIT={{config --get pair.committer.name}}')
+    end
+  end
 
   describe 'confirure' do
     context 'when pair is set with just one user' do

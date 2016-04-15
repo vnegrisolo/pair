@@ -1,5 +1,14 @@
 #!/bin/sh
 
+pair_status() {
+  echo "|-----------|----------------------|----------------------|"
+  echo "| Pair      | Name                 | Email                |";
+  echo "|-----------|----------------------|----------------------|"
+  printf "| Author    | %20s | %20s |" "`git config --get pair.author.name`" "`git config --get pair.author.email`"; echo "";
+  printf "| Committer | %20s | %20s |" "`git config --get pair.committer.name`" "`git config --get pair.committer.email`"; echo "";
+  echo "|-----------|----------------------|----------------------|"
+}
+
 pair_configure() {
   response=$(curl "https://api.github.com/users/${1}")
   email=$(echo "${response}" | grep '"email":')
@@ -23,7 +32,9 @@ pair_configure() {
 }
 
 pair() {
-  if [ "${1}" == "commit" ]; then
+  if [ -z "${1}" ]; then
+    pair_status;
+  elif [ "${1}" == "commit" ]; then
     git $@;
   else
     pair_configure $@
