@@ -31,9 +31,18 @@ pair_configure() {
   fi
 }
 
+pair_reset() {
+  git config pair.author.name ""
+  git config pair.author.email ""
+  git config pair.committer.name ""
+  git config pair.committer.email ""
+}
+
 pair() {
   if [ -z "${1}" ]; then
-    pair_status;
+    pair_status
+  elif [ "${1}" == "reset" ]; then
+    pair_reset $@
   elif [ "${1}" == "commit" ]; then
     git $@;
   else

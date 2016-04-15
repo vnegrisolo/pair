@@ -43,6 +43,17 @@ RSpec.describe 'pair' do
     end
   end
 
+  describe 'reset' do
+    subject { `#{command} reset` }
+
+    it 'resets pair config' do
+      is_expected.to include('GIT={{config pair.author.email }}')
+      is_expected.to include('GIT={{config pair.author.name }}')
+      is_expected.to include('GIT={{config pair.committer.email }}')
+      is_expected.to include('GIT={{config pair.committer.name }}')
+    end
+  end
+
   describe 'proxy commits' do
     context 'when pair commits' do
       subject { `#{command} commit --amend` }
