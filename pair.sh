@@ -1,12 +1,14 @@
 #!/bin/sh
 
+pair_table_line() {
+  printf "| %-9s | %-40s | %-40s |" "${1}" "${2}" "${3}"; echo ""
+}
+
 pair_status() {
-  echo "|-----------|------------------------------------------|------------------------------------------|"
-  echo "| Pair      | Name                                     | Email                                    |"
-  echo "|-----------|------------------------------------------|------------------------------------------|"
-  printf "| Author    | %40s | %40s |" "`git config --get pair.author.name`" "`git config --get pair.author.email`"; echo ""
-  printf "| Committer | %40s | %40s |" "`git config --get pair.committer.name`" "`git config --get pair.committer.email`"; echo ""
-  echo "|-----------|------------------------------------------|------------------------------------------|"
+  pair_table_line "Pair" "Name" "Email"
+  pair_table_line "----" "----" "-----"
+  pair_table_line "Author" "`git config --get pair.author.name`" "`git config --get pair.author.email`"
+  pair_table_line "Committer" "`git config --get pair.committer.name`" "`git config --get pair.committer.email`"
 }
 
 pair_configure() {
