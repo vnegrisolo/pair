@@ -12,24 +12,21 @@ pair_status() {
 }
 
 pair_configure() {
-  response=$(curl "https://api.github.com/users/${1}")
+  type=${1}
+  user=${2}
+
+  response=$(curl "https://api.github.com/users/${user}")
   email=$(echo "${response}" | grep '"email":')
   email="${email/[ ]*\"email\": \"}"
-  git config pair.author.email "${email/\",}"
+  git config pair.${type}.email "${email/\",}"
 
   name=$(echo "${response}" | grep '"name":')
   name="${name/[ ]*\"name\": \"}"
-  git config pair.author.name "${name/\",}"
+  git config pair.${type}.name "${name/\",}"
 
-  if [ -n "${2}" ]; then
-    response=$(curl "https://api.github.com/users/${2}")
-    email=$(echo "${response}" | grep '"email":')
-    email="${email/[ ]*\"email\": \"}"
-    git config pair.committer.email "${email/\",}"
-
-    name=$(echo "${response}" | grep '"name":')
-    name="${name/[ ]*\"name\": \"}"
-    git config pair.committer.name "${name/\",}"
+  if [ -z "${name}" ] || [ -z "${email}" ]; then
+    echo "ERROR => You need to set Name and Email for your ${user} on Github"
+    return 0;
   fi
 }
 
@@ -72,6 +69,10 @@ pair() {
   elif [ "${1}" == "commit" ]; then
     pair_commit $@
   else
-    pair_configure $@
+    pair_reset
+    pair_configure 'author' $1
+    if [ -n "${2}" ]; then
+      pair_configure 'committer' $2
+    fi
   fi
 }
