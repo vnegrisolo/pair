@@ -1,12 +1,12 @@
 #!/bin/sh
 
 pair_status() {
-  echo "|-----------|----------------------|----------------------|"
-  echo "| Pair      | Name                 | Email                |";
-  echo "|-----------|----------------------|----------------------|"
-  printf "| Author    | %20s | %20s |" "`git config --get pair.author.name`" "`git config --get pair.author.email`"; echo "";
-  printf "| Committer | %20s | %20s |" "`git config --get pair.committer.name`" "`git config --get pair.committer.email`"; echo "";
-  echo "|-----------|----------------------|----------------------|"
+  echo "|-----------|------------------------------------------|------------------------------------------|"
+  echo "| Pair      | Name                                     | Email                                    |"
+  echo "|-----------|------------------------------------------|------------------------------------------|"
+  printf "| Author    | %40s | %40s |" "`git config --get pair.author.name`" "`git config --get pair.author.email`"; echo ""
+  printf "| Committer | %40s | %40s |" "`git config --get pair.committer.name`" "`git config --get pair.committer.email`"; echo ""
+  echo "|-----------|------------------------------------------|------------------------------------------|"
 }
 
 pair_configure() {
