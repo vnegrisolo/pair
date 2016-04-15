@@ -17,6 +17,17 @@ RSpec.describe 'pair' do
         is_expected.to include('GIT={{config pair.author.name Vinicius Ferreira Negrisolo}}')
       end
     end
+
+    context 'when pair is set with two users' do
+      subject { `#{command} vnegrisolo user2` }
+
+      it 'call git commit with same params' do
+        is_expected.to include('GIT={{config pair.author.email vinicius.negrisolo@gmail.com}}')
+        is_expected.to include('GIT={{config pair.author.name Vinicius Ferreira Negrisolo}}')
+        is_expected.to include('GIT={{config pair.committer.email vinicius.negrisolo@gmail.com}}')
+        is_expected.to include('GIT={{config pair.committer.name Vinicius Ferreira Negrisolo}}')
+      end
+    end
   end
 
   describe 'proxy commits' do
