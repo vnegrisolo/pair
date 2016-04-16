@@ -1,14 +1,11 @@
 #!/bin/sh
 
-pair_table_line() {
-  printf "| %-9s | %-40s | %-40s |" "${1}" "${2}" "${3}"; echo ""
-}
+GITHUB_API='https://api.github.com'
 
-pair_status() {
-  pair_table_line "Pair" "Name" "Email"
-  pair_table_line "----" "----" "-----"
-  pair_table_line "Author" "`git config --get pair.author.name`" "`git config --get pair.author.email`"
-  pair_table_line "Committer" "`git config --get pair.committer.name`" "`git config --get pair.committer.email`"
+pair_get() {
+  field=${1}
+
+  git config --get "pair.${field}"
 }
 
 pair_set() {
@@ -20,11 +17,27 @@ pair_set() {
   git config ${type}.name "${name}"
 }
 
+pair_table_line() {
+  printf "| %-9s | %-40s | %-40s |" "${1}" "${2}" "${3}"; echo ""
+}
+
+pair_status() {
+  author_name="`pair_get author.name`"
+  author_email="`pair_get author.email`"
+  committer_name="`pair_get committer.name`"
+  committer_email="`pair_get committer.email`"
+
+  pair_table_line "Pair" "Name" "Email"
+  pair_table_line "----" "----" "-----"
+  pair_table_line "Author" "${author_name}" "${author_email}"
+  pair_table_line "Committer" "${committer_name}" "${committer_email}"
+}
+
 pair_configure() {
   type=${1}
   user=${2}
 
-  response=$(curl "https://api.github.com/users/${user}")
+  response=$(curl "${GITHUB_API}/users/${user}")
 
   prefix=' *"[a-zA-Z]*": *"\{0,1\}'
   suffix='\(null\)\{0,1\}"\{0,1\},\{0,1\}'
@@ -32,11 +45,10 @@ pair_configure() {
   email=$(echo "${response}" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
   name=$(echo "${response}" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
 
-  pair_set "${type}" "${email/\",}" "${name/\",}"
+  pair_set "${type}" "${email}" "${name}"
 
   if [ -z "${name}" ] || [ -z "${email}" ]; then
     echo "ERROR => You need to set Name and Email for ${user} on Github"
-    return 0;
   fi
 }
 
@@ -46,10 +58,10 @@ pair_reset() {
 }
 
 pair_commit() {
-  author_name="`git config --get pair.author.name`"
-  author_email="`git config --get pair.author.email`"
-  committer_name="`git config --get pair.committer.name`"
-  committer_email="`git config --get pair.committer.email`"
+  author_name="`pair_get author.name`"
+  author_email="`pair_get author.email`"
+  committer_name="`pair_get committer.name`"
+  committer_email="`pair_get committer.email`"
 
   if [ -n "${author_email}" ]; then
     pair_set "user" "${author_email}" "${author_name}"
