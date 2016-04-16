@@ -26,16 +26,16 @@ pair_configure() {
 
   response=$(curl "https://api.github.com/users/${user}")
 
-  email=$(echo "${response}" | grep '"email":')
-  email="${email/[ ]*\"email\": \"}"
+  prefix=' *"[a-zA-Z]*": *"\{0,1\}'
+  suffix='\(null\)\{0,1\}"\{0,1\},\{0,1\}'
 
-  name=$(echo "${response}" | grep '"name":')
-  name="${name/[ ]*\"name\": \"}"
+  email=$(echo "${response}" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
+  name=$(echo "${response}" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
 
   pair_set "${type}" "${email/\",}" "${name/\",}"
 
   if [ -z "${name}" ] || [ -z "${email}" ]; then
-    echo "ERROR => You need to set Name and Email for your ${user} on Github"
+    echo "ERROR => You need to set Name and Email for ${user} on Github"
     return 0;
   fi
 }

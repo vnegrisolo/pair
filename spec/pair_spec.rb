@@ -22,6 +22,17 @@ RSpec.describe 'pair' do
   end
 
   describe 'confirure' do
+
+    context 'when the user does not have email or name' do
+      subject { `#{command} vnegrisolo` }
+
+      let(:github_user_json) { File.read('spec/fixtures/github_user_without_email_and_name.json') }
+
+      it 'call git commit with same params' do
+        is_expected.to include('ERROR => You need to set Name and Email for vnegrisolo on Github')
+      end
+    end
+
     context 'when pair is set with just one user' do
       subject { `#{command} vnegrisolo` }
 
