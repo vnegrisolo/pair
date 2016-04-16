@@ -16,7 +16,6 @@
   "received_events_url": "https://api.github.com/users/vnegrisolo/received_events",
   "type": "User",
   "site_admin": false,
-  "name": "Vinicius Ferreira Negrisolo",
   "company": "Love Mondays",
   "blog": null,
   "location": "São Paulo, Brasil",
@@ -28,5 +27,6 @@
   "following": 22,
   "created_at": "2011-09-22T18:24:22Z",
   "updated_at": "2016-03-31T19:18:49Z",
+  "name": "Vinicius Ferreira Negrisolo",
   "email": "vinicius.negrisolo@gmail.com"
 }

@@ -36,12 +36,10 @@ pair_status() {
 pair_configure() {
   type=${1}
   user=${2}
-
-  response=$(curl "${GITHUB_API}/users/${user}")
-
   prefix=' *"[a-zA-Z]*": *"\{0,1\}'
   suffix='\(null\)\{0,1\}"\{0,1\},\{0,1\}'
 
+  response=$(curl "${GITHUB_API}/users/${user}")
   email=$(echo "${response}" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
   name=$(echo "${response}" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
 
