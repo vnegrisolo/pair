@@ -1,15 +1,16 @@
 class Shell
-  def initialize
-    @stubs = {
-      git: ShellMock.new(:git, output: 'GIT={{$@}}'),
-      curl: ShellMock.new(:curl, output: fixture(:github_user)),
-    }
+  def initialize(*mocks)
+    @mocks = mocks.map { |mock| [mock, ShellMock.new(mock)] }.to_h
+  end
+
+  def expect(mock)
+    @mocks[mock]
   end
 
   def run(command, params = '')
     full_command = [
       ". #{command}.sh",
-      @stubs.values.map(&:to_shell),
+      @mocks.values.map(&:to_shell),
       "#{command} #{params}"
     ].flatten.join('; ')
 

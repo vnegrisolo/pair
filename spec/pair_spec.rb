@@ -2,7 +2,12 @@ require 'spec_helper'
 
 RSpec.describe 'pair', type: :shell do
 
-  subject(:shell) { Shell.new }
+  subject(:shell) { Shell.new(:git, :curl) }
+
+  before do
+    shell.expect(:git).and_return('GIT={{$@}}')
+    shell.expect(:curl).and_return(fixture(:github_user))
+  end
 
   describe 'status' do
     subject { shell.run 'pair' }
