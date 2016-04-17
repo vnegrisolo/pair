@@ -1,7 +1,12 @@
 class ShellMock
   def initialize(command)
     @command = command
-    @output = "You Should Mock #{command}"
+    @output = "'#{command}' Should Be Mocked with='$*'"
+    @expectations = []
+  end
+
+  def with(params)
+    @expectations.push(ShellMockExpectation.new(params)).last
   end
 
   def and_return(output)
@@ -9,13 +14,24 @@ class ShellMock
   end
 
   def to_shell
-    output = shell_output(@output)
-    "#{@command}() { #{output} }"
+    Shell.join(
+      "#{@command}() {",
+      "#{@command}_ok=0",
+      expectations_to_shell,
+      "if [ $#{@command}_ok -eq 0 ]; then #{print(@output)}; fi",
+      '}',
+    )
   end
 
   private
 
-  def shell_output(output)
-    "echo \"#{output.gsub(/"/, '\"')}\";"
+  def expectations_to_shell
+    @expectations.map do |e|
+      "if [ \"$*\" = \"#{e.params}\" ]; then #{@command}_ok=1; #{print(e.output)}; fi"
+    end
+  end
+
+  def print(output)
+    "echo \"#{output.gsub(/"/, '\"')}\""
   end
 end

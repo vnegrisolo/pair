@@ -3,17 +3,21 @@ class Shell
     @mocks = mocks.map { |mock| [mock, ShellMock.new(mock)] }.to_h
   end
 
-  def expect(mock)
+  def allow(mock)
     @mocks[mock]
   end
 
   def run(command, params = '')
-    full_command = [
-      ". #{command}.sh",
+    full_command = Shell.join(
       @mocks.values.map(&:to_shell),
-      "#{command} #{params}"
-    ].flatten.join('; ')
+      ". #{command}.sh",
+      "#{command} #{params}",
+    )
 
     `#{full_command}`
+  end
+
+  def self.join(*args)
+    args.flatten.compact.join("\n")
   end
 end

@@ -18,7 +18,7 @@ pair_set() {
 }
 
 pair_table_line() {
-  printf "| %-9s | %-40s | %-40s |" "${1}" "${2}" "${3}"; echo ""
+  printf "| %-9s | %-20s | %-20s |" "${1}" "${2}" "${3}"; echo ""
 }
 
 pair_status() {
@@ -43,10 +43,10 @@ pair_configure() {
   email=$(echo "${response}" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
   name=$(echo "${response}" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
 
-  pair_set "${type}" "${email}" "${name}"
-
   if [ -z "${name}" ] || [ -z "${email}" ]; then
     echo "ERROR => You need to set Name and Email for ${user} on Github"
+  else
+    pair_set "${type}" "${email}" "${name}"
   fi
 }
 
