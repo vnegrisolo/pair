@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-RSpec.describe 'pair.sh', type: :shell do
+RSpec.describe 'pair', type: :shell do
 
   subject(:shell) { Shell.new }
 
   describe 'status' do
-    subject { shell.pair }
+    subject { shell.run 'pair' }
 
     it 'prints the author and committer' do
       is_expected.to include('Author')
@@ -20,7 +20,7 @@ RSpec.describe 'pair.sh', type: :shell do
   describe 'confirure' do
 
     context 'when the user does not have email or name' do
-      subject { shell.pair 'vnegrisolo' }
+      subject { shell.run 'pair', 'vnegrisolo' }
 
       let(:github_user_response) { fixture(:github_user_without_email_and_name) }
 
@@ -30,7 +30,7 @@ RSpec.describe 'pair.sh', type: :shell do
     end
 
     context 'when pair is set with just one user' do
-      subject { shell.pair 'vnegrisolo' }
+      subject { shell.run 'pair', 'vnegrisolo' }
 
       it 'call git commit with same params' do
         is_expected.to include('GIT={{config pair.author.email vinicius.negrisolo@gmail.com}}')
@@ -39,7 +39,7 @@ RSpec.describe 'pair.sh', type: :shell do
     end
 
     context 'when pair is set with two users' do
-      subject { shell.pair 'vnegrisolo user2' }
+      subject { shell.run 'pair', 'vnegrisolo user2' }
 
       it 'call git commit with same params' do
         is_expected.to include('GIT={{config pair.author.email vinicius.negrisolo@gmail.com}}')
@@ -51,7 +51,7 @@ RSpec.describe 'pair.sh', type: :shell do
   end
 
   describe 'reset' do
-    subject { shell.pair 'reset' }
+    subject { shell.run 'pair', 'reset' }
 
     it 'resets pair config' do
       is_expected.to include('GIT={{config pair.author.email }}')
@@ -63,7 +63,7 @@ RSpec.describe 'pair.sh', type: :shell do
 
   describe 'proxy commits' do
     context 'when no pair is set yet' do
-      subject { shell.pair 'commit --amend' }
+      subject { shell.run 'pair', 'commit --amend' }
 
       it 'call git commit with same params' do
         is_expected.to include('GIT={{commit --amend')
@@ -71,7 +71,7 @@ RSpec.describe 'pair.sh', type: :shell do
     end
 
     context 'when pair is actually just one person' do
-      subject { shell.pair 'vnegrisolo; pair commit --amend' }
+      subject { shell.run 'pair', 'vnegrisolo; pair commit --amend' }
 
       it 'call git commit with same params' do
         is_expected.to include('GIT={{commit --amend --author=')
@@ -79,14 +79,14 @@ RSpec.describe 'pair.sh', type: :shell do
     end
 
     context 'when pair is actually just one person' do
-      subject { shell.pair 'vnegrisolo hashrocketer; pair commit --amend' }
+      subject { shell.run 'pair', 'vnegrisolo hashrocketer; pair commit --amend' }
 
       it 'call git commit with same params' do
         is_expected.to include('GIT={{commit --amend --author=')
       end
 
       context 'when a second commit is made' do
-        subject { shell.pair 'vnegrisolo hashrocketer; pair commit --amend' }
+        subject { shell.run 'pair', 'vnegrisolo hashrocketer; pair commit --amend' }
 
         it 'calls git commit with original author and committer swapped' do
           is_expected.to include('GIT={{commit --amend --author=')
