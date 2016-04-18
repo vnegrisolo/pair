@@ -5,7 +5,7 @@ GITHUB_API='https://api.github.com'
 pair_get() {
   field=${1}
 
-  git config --get "pair.${field}"
+  git config --global --get pair.${field}
 }
 
 pair_set() {
@@ -13,8 +13,8 @@ pair_set() {
   email=${2}
   name=${3}
 
-  git config ${type}.email "${email}"
-  git config ${type}.name "${name}"
+  git config --global ${type}.email "${email}"
+  git config --global ${type}.name "${name}"
 }
 
 pair_table_line() {

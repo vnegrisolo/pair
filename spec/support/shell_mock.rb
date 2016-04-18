@@ -3,6 +3,7 @@ class ShellMock
     @command = command
     @output = "'#{command}' Should Be Mocked with='$*'"
     @expectations = []
+    @shell_control = "#{@command}_ok"
   end
 
   def with(params)
@@ -16,18 +17,22 @@ class ShellMock
   def to_shell
     Shell.join(
       "#{@command}() {",
-      "#{@command}_ok=0",
+      "#{@shell_control}=0",
       expectations_to_shell,
-      "if [ $#{@command}_ok -eq 0 ]; then #{print(@output)}; fi",
+      default_expactation_to_shell,
       '}',
     )
   end
 
   private
 
+  def default_expactation_to_shell
+    "if [ $#{@shell_control} -eq 0 ]; then #{print(@output)}; fi"
+  end
+
   def expectations_to_shell
     @expectations.map do |e|
-      "if [ \"$*\" = \"#{e.params}\" ]; then #{@command}_ok=1; #{print(e.output)}; fi"
+      "if [ \"$*\" = \"#{e.params}\" ]; then #{@shell_control}=1; #{print(e.output)}; fi"
     end
   end
 
