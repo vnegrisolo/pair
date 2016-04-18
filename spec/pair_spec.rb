@@ -55,7 +55,10 @@ RSpec.describe 'pair', type: :shell do
         shell.allow(:curl).with('https://api.github.com/users/bob')
           .and_return(fixture(:github_user_bob_incomplete))
 
-        is_expected.to include('ERROR => You need to set Name and Email for bob on Github')
+        is_expected.to include('ERROR')
+        is_expected.to include('You need to set Name and Email for bob on Github, or run manually:')
+        is_expected.to include("git config --global pair.author.name 'Your Name'")
+        is_expected.to include("git config --global pair.author.email 'your@email.com'")
       end
     end
 

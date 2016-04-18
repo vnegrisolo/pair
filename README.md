@@ -6,48 +6,61 @@ Pair Programming with Git Authors
 
 ## Install
 
-```shell
+```bash
 mkdir ~/.functions
 git clone git@github.com:vnegrisolo/pair.git ~/.functions/pair
-echo "source ~/.functions/pair/:pair.sh" >> ~/.bashrc
+echo "source ~/.functions/pair/pair.sh" >> ~/.bashrc
 ```
 
 ## Status
 
-```shell
+```bash
 pair
 ```
 
 will output something like:
 
 ```
-| Pair      | Name         | Email          |
-| ----      | ----         | -----          |
-| Author    | Bill Jr      | bill@mail.com  |
-| Committer | Karen Bright | karen@mail.com |
+Author    => Bill Jr <bill@mail.com>
+Committer => Karen Bright <karen@mail.com>
 ```
 
 ## Configure
 
 `pair` accepts github users and fetch your **name** and **email** from github api.
 
-```shell
+```bash
 pair bill karen
+```
+
+If you do not have a name or public email for these users `pair` will show a command line so you can configure it manually, something like:
+
+```bash
+pair user_with_no_email
+ERROR => You need to set Name and Email for user_with_no_email on Github, or run manually:
+  git config --global pair.author.email 'your@email.com'
+  git config --global pair.author.name 'Your Name'
 ```
 
 ## Commit
 
 `pair` calls git in order to commit with all the params you wish and swaps **author** and **committer** for every commit.
 
-```shell
+```bash
 pair commit -m 'Something changed'
+```
+
+## Reset
+
+```bash
+pair reset
 ```
 
 ## Development
 
 I chose [rspec](https://github.com/rspec/rspec) as my test framework because I love it.
 
-So I created some abstractions to deal with shell and make our lives easier.
+So I created some abstractions to deal with shell and make bash developer live easier.
 
 ## Github Notes
 

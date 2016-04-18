@@ -47,10 +47,12 @@ pair_configure() {
   email=$(echo "${response}" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
   name=$(echo "${response}" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
 
-  if [ -z "${name}" ] || [ -z "${email}" ]; then
-    echo "ERROR => You need to set Name and Email for ${user} on Github"
-  else
+  if [ -n "${name}" ] && [ -n "${email}" ]; then
     pair_set "${type}" "${email}" "${name}"
+  else
+    echo "${RED}ERROR${RESET} => You need to set Name and Email for ${user} on Github, or run manually:"
+    echo "  git config --global ${type}.email 'your@email.com'"
+    echo "  git config --global ${type}.name 'Your Name'"
   fi
 }
 
