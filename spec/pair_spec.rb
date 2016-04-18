@@ -98,7 +98,8 @@ RSpec.describe 'pair', type: :shell do
         shell.allow(:git).with('config --global --get pair.author.email')
         shell.allow(:git).with('config --global --get pair.committer.name')
         shell.allow(:git).with('config --global --get pair.committer.email')
-        shell.allow(:git).with('commit --amend ')
+
+        shell.allow(:git).with('commit --amend')
       end
     end
 
@@ -110,9 +111,8 @@ RSpec.describe 'pair', type: :shell do
           .and_return('bill@mail.com')
         shell.allow(:git).with('config --global --get pair.committer.name')
         shell.allow(:git).with('config --global --get pair.committer.email')
-        shell.allow(:git).with('config --global user.name Bill Jr')
-        shell.allow(:git).with('config --global user.email bill@mail.com')
-        shell.allow(:git).with('commit --amend ')
+
+        shell.allow(:git).with('commit --amend')
       end
     end
 
@@ -127,13 +127,12 @@ RSpec.describe 'pair', type: :shell do
         shell.allow(:git).with('config --global --get pair.committer.email')
           .and_return('karen@mail.com')
 
-        shell.allow(:git).with('config --global user.name Bill Jr')
-        shell.allow(:git).with('config --global user.email bill@mail.com')
+        shell.allow(:git).with('commit --amend')
+
         shell.allow(:git).with('config --global pair.author.name Karen Bright')
         shell.allow(:git).with('config --global pair.author.email karen@mail.com')
         shell.allow(:git).with('config --global pair.committer.name Bill Jr')
         shell.allow(:git).with('config --global pair.committer.email bill@mail.com')
-        shell.allow(:git).with('commit --amend --author=\"Karen Bright <karen@mail.com>\"')
       end
     end
   end

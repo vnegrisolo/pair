@@ -1,6 +1,8 @@
 # pair
 
-Pair Programming with Git Authors
+Pair Programming with Git Author and Git Committer.
+
+<img width="411" alt="screen shot 2016-04-18 at 9 07 13 pm" src="https://cloud.githubusercontent.com/assets/1071893/14624535/9972bc64-05a9-11e6-97e4-6ac53cf76e4b.png">
 
 `pair` uses git **author** and **committer** to apply the contributions equally to both developers.
 
@@ -20,10 +22,7 @@ pair
 
 will output something like:
 
-```
-Author    => Bill Jr <bill@mail.com>
-Committer => Karen Bright <karen@mail.com>
-```
+<img width="280" alt="screen shot 2016-04-18 at 9 16 26 pm" src="https://cloud.githubusercontent.com/assets/1071893/14624684/e8f405b2-05aa-11e6-8c07-35aa42b62817.png">
 
 ## Configure
 
@@ -68,9 +67,9 @@ Github defines some rules to [contributions](https://help.github.com/articles/wh
 
 TL;TR:
 
-You need to fit in **at least one** of the following:
-
-- You are a **collaborator** on the repository or are a **member of the organization** that owns the repository.
-- You have **forked** the repository.
-- You have opened a **pull request** or **issue** in the repository.
-- You have **starred** the repository.
+> You need to fit in **at least one** of the following:
+> 
+> - You are a **collaborator** on the repository or are a **member of the organization** that owns the repository.
+> - You have **forked** the repository.
+> - You have opened a **pull request** or **issue** in the repository.
+> - You have **starred** the repository.

@@ -18,23 +18,25 @@ pair_set() {
   email=${2}
   name=${3}
 
-  git config --global ${type}.email "${email}"
-  git config --global ${type}.name "${name}"
+  git config --global pair.${type}.email "$email"
+  git config --global pair.${type}.name "$name"
 }
 
 pair_status() {
-  author_name="`pair_get author.name`"
-  author_email="`pair_get author.email`"
-  committer_name="`pair_get committer.name`"
-  committer_email="`pair_get committer.email`"
+  author="$(pair_get author.name) <$(pair_get author.email)>"
+  committer="$(pair_get committer.name) <$(pair_get committer.email)>"
 
-  echo "Author    => ${MAGENTA}${author_name} <${author_email}>${RESET}"
-  echo "Committer => ${CYAN}${committer_name} <${committer_email}>${RESET}"
+  echo "Author    => ${CYAN}${author}${RESET}"
+  echo "Committer => ${MAGENTA}${committer}${RESET}"
 }
 
 pair_reset() {
-  pair_set "pair.author"
-  pair_set "pair.committer"
+  unset GIT_AUTHOR_NAME
+  unset GIT_AUTHOR_EMAIL
+  unset GIT_COMMITTER_NAME
+  unset GIT_COMMITTER_EMAIL
+  pair_set "author"
+  pair_set "committer"
 }
 
 pair_configure() {
@@ -44,51 +46,44 @@ pair_configure() {
   suffix='\(null\)\{0,1\}"\{0,1\},\{0,1\}'
 
   response=$(curl "${GITHUB_API}/users/${user}")
-  email=$(echo "${response}" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
-  name=$(echo "${response}" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
+  email=$(echo "$response" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
+  name=$(echo "$response" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
 
-  if [ -n "${name}" ] && [ -n "${email}" ]; then
-    pair_set "${type}" "${email}" "${name}"
+  if [ -n "$name" ] && [ -n "$email" ]; then
+    pair_set "$type" "$email" "$name"
   else
     echo "${RED}ERROR${RESET} => You need to set Name and Email for ${user} on Github, or run manually:"
-    echo "  git config --global ${type}.email 'your@email.com'"
-    echo "  git config --global ${type}.name 'Your Name'"
+    echo "  git config --global pair.${type}.email 'your@email.com'"
+    echo "  git config --global pair.${type}.name 'Your Name'"
   fi
 }
 
 pair_commit() {
-  author_name="`pair_get author.name`"
-  author_email="`pair_get author.email`"
-  committer_name="`pair_get committer.name`"
-  committer_email="`pair_get committer.email`"
+  export GIT_AUTHOR_NAME="$(pair_get author.name)"
+  export GIT_AUTHOR_EMAIL="$(pair_get author.email)"
+  export GIT_COMMITTER_NAME="$(pair_get committer.name)"
+  export GIT_COMMITTER_EMAIL="$(pair_get committer.email)"
 
-  if [ -n "${author_email}" ]; then
-    pair_set "user" "${author_email}" "${author_name}"
+  git "$@"
+
+  if [ -n "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_COMMITTER_EMAIL" ]; then
+    pair_set "author" "$GIT_COMMITTER_EMAIL" "$GIT_COMMITTER_NAME"
+    pair_set "committer" "$GIT_AUTHOR_EMAIL" "$GIT_AUTHOR_NAME"
   fi
-
-  git_author=""
-  if [ -n "${committer_email}" ]; then
-    git_author="--author=\"${committer_name} <${committer_email}>\""
-
-    pair_set "pair.author" "${committer_email}" "${committer_name}"
-    pair_set "pair.committer" "${author_email}" "${author_name}"
-  fi
-
-  git "$@" "${git_author}"
 }
 
 pair() {
-  if [ -z "${1}" ]; then
+  if [ -z "$1" ]; then
     pair_status
-  elif [ "${1}" == "reset" ]; then
-    pair_reset $@
-  elif [ "${1}" == "commit" ]; then
-    pair_commit $@
+  elif [ "$1" == "commit" ]; then
+    pair_commit "$@"
+  elif [ "$1" == "reset" ]; then
+    pair_reset
   else
     pair_reset
-    pair_configure 'pair.author' $1
-    if [ -n "${2}" ]; then
-      pair_configure 'pair.committer' $2
+    pair_configure 'author' $1
+    if [ -n "$2" ]; then
+      pair_configure 'committer' $2
     fi
   fi
 }
