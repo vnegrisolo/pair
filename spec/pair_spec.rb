@@ -21,9 +21,10 @@ RSpec.describe 'pair', type: :shell do
       shell.allow(:git).with('config --global --get pair.committer.email')
         .and_return('karen@mail.com')
 
-      is_expected.to include('| Pair      | Name                 | Email')
-      is_expected.to include('| Author    | Bill Jr              | bill@mail.com')
-      is_expected.to include('| Committer | Karen Bright         | karen@mail.com')
+      is_expected.to include('Author    =>')
+      is_expected.to include('Bill Jr <bill@mail.com>')
+      is_expected.to include('Committer =>')
+      is_expected.to include('Karen Bright <karen@mail.com>')
     end
   end
 

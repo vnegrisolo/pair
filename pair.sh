@@ -1,5 +1,10 @@
 #!/bin/sh
 
+RED="$(tput setaf 1)"
+MAGENTA="$(tput setaf 5)"
+CYAN="$(tput setaf 6)"
+RESET="$(tput sgr0)"
+
 GITHUB_API='https://api.github.com'
 
 pair_get() {
@@ -17,20 +22,19 @@ pair_set() {
   git config --global ${type}.name "${name}"
 }
 
-pair_table_line() {
-  printf "| %-9s | %-20s | %-20s |" "${1}" "${2}" "${3}"; echo ""
-}
-
 pair_status() {
   author_name="`pair_get author.name`"
   author_email="`pair_get author.email`"
   committer_name="`pair_get committer.name`"
   committer_email="`pair_get committer.email`"
 
-  pair_table_line "Pair" "Name" "Email"
-  pair_table_line "----" "----" "-----"
-  pair_table_line "Author" "${author_name}" "${author_email}"
-  pair_table_line "Committer" "${committer_name}" "${committer_email}"
+  echo "Author    => ${MAGENTA}${author_name} <${author_email}>${RESET}"
+  echo "Committer => ${CYAN}${committer_name} <${committer_email}>${RESET}"
+}
+
+pair_reset() {
+  pair_set "pair.author"
+  pair_set "pair.committer"
 }
 
 pair_configure() {
@@ -48,11 +52,6 @@ pair_configure() {
   else
     pair_set "${type}" "${email}" "${name}"
   fi
-}
-
-pair_reset() {
-  pair_set "pair.author"
-  pair_set "pair.committer"
 }
 
 pair_commit() {
