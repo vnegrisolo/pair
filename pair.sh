@@ -22,21 +22,24 @@ pair_set() {
   git config --global pair.${type}.name "$name"
 }
 
+pair_reset() {
+  unset GIT_AUTHOR_NAME
+  unset GIT_AUTHOR_EMAIL
+  unset GIT_COMMITTER_NAME
+  unset GIT_COMMITTER_EMAIL
+
+  git config --global --unset pair.author.name
+  git config --global --unset pair.author.email
+  git config --global --unset pair.committer.name
+  git config --global --unset pair.committer.email
+}
+
 pair_status() {
   author="$(pair_get author.name) <$(pair_get author.email)>"
   committer="$(pair_get committer.name) <$(pair_get committer.email)>"
 
   echo "Author    => ${CYAN}${author}${RESET}"
   echo "Committer => ${MAGENTA}${committer}${RESET}"
-}
-
-pair_reset() {
-  unset GIT_AUTHOR_NAME
-  unset GIT_AUTHOR_EMAIL
-  unset GIT_COMMITTER_NAME
-  unset GIT_COMMITTER_EMAIL
-  pair_set "author"
-  pair_set "committer"
 }
 
 pair_configure() {

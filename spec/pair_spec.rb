@@ -32,20 +32,20 @@ RSpec.describe 'pair', type: :shell do
     subject { shell.run 'pair', 'reset' }
 
     it 'resets pair config' do
-      shell.allow(:git).with('config --global pair.author.name ')
-      shell.allow(:git).with('config --global pair.author.email ')
-      shell.allow(:git).with('config --global pair.committer.name ')
-      shell.allow(:git).with('config --global pair.committer.email ')
+      shell.allow(:git).with('config --global --unset pair.author.name')
+      shell.allow(:git).with('config --global --unset pair.author.email')
+      shell.allow(:git).with('config --global --unset pair.committer.name')
+      shell.allow(:git).with('config --global --unset pair.committer.email')
     end
   end
 
   describe 'confirure' do
 
     before do
-      shell.allow(:git).with('config --global pair.author.name ')
-      shell.allow(:git).with('config --global pair.author.email ')
-      shell.allow(:git).with('config --global pair.committer.name ')
-      shell.allow(:git).with('config --global pair.committer.email ')
+      shell.allow(:git).with('config --global --unset pair.author.name')
+      shell.allow(:git).with('config --global --unset pair.author.email')
+      shell.allow(:git).with('config --global --unset pair.committer.name')
+      shell.allow(:git).with('config --global --unset pair.committer.email')
     end
 
     context 'when the user does not have email or name' do
