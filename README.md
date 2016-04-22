@@ -1,10 +1,10 @@
 # pair
 
-Pair Programming with Git Author and Git Committer.
+Pair Programming and split the commits contributiuons.
+
+For every commit Author and Commiter will be swapped, so 50% for each developer.
 
 <img width="411" alt="screen shot 2016-04-18 at 9 07 13 pm" src="https://cloud.githubusercontent.com/assets/1071893/14624535/9972bc64-05a9-11e6-97e4-6ac53cf76e4b.png">
-
-`pair` uses git **author** and **committer** to apply the contributions equally to both developers.
 
 ## Install
 
@@ -20,13 +20,16 @@ echo "source ~/.functions/pair/pair.sh" >> ~/.bashrc
 pair
 ```
 
-will output something like:
+prints something like:
 
 <img width="280" alt="screen shot 2016-04-18 at 9 16 26 pm" src="https://cloud.githubusercontent.com/assets/1071893/14624684/e8f405b2-05aa-11e6-8c07-35aa42b62817.png">
 
 ## Configure
 
-`pair` accepts github users and fetch your **name** and **email** from github api.
+`pair` accepts github users and fetch your **name** and **email** from:
+
+- local cache
+- github api
 
 ```bash
 pair bill karen
@@ -39,6 +42,30 @@ pair user_with_no_email
 ERROR => You need to set Name and Email for user_with_no_email on Github, or run manually:
   git config --global pair.author.email 'your@email.com'
   git config --global pair.author.name 'Your Name'
+  git config --global pair.your-user.email 'your@email.com'
+  git config --global pair.your-user.name 'Your Name'
+```
+
+### Ignore github
+
+If you don't want to use github users you can create your own config file by:
+
+Add to you `~/.gitconfig`:
+
+```
+[include]
+  path = ~/.gitconfig.pair
+```
+
+Create a file `~/.gitconfig.pair` as:
+
+```
+[pair "your-user"]
+  email = your@email.com
+  name = Your Name
+[pair "another-user"]
+  email = another@email.com
+  name = Another Name
 ```
 
 ## Commit

@@ -45,19 +45,28 @@ pair_status() {
 pair_configure() {
   type=${1}
   user=${2}
-  prefix=' *"[a-zA-Z]*": *"\{0,1\}'
-  suffix='\(null\)\{0,1\}"\{0,1\},\{0,1\}'
 
-  response=$(curl "${GITHUB_API}/users/${user}")
-  email=$(echo "$response" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
-  name=$(echo "$response" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
+  name="$(pair_get ${user}.name)"
+  email="$(pair_get ${user}.email)"
+
+  if [ -z "$name" ] || [ -z "$email" ]; then
+    prefix=' *"[a-zA-Z]*": *"\{0,1\}'
+    suffix='\(null\)\{0,1\}"\{0,1\},\{0,1\}'
+
+    response=$(curl "${GITHUB_API}/users/${user}")
+    email=$(echo "$response" | grep '"email":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
+    name=$(echo "$response" | grep '"name":' | sed "s/^${prefix}//" | sed "s/${suffix}$//")
+  fi
 
   if [ -n "$name" ] && [ -n "$email" ]; then
     pair_set "$type" "$email" "$name"
+    pair_set "$user" "$email" "$name"
   else
     echo "${RED}ERROR${RESET} => You need to set Name and Email for ${user} on Github, or run manually:"
     echo "  git config --global pair.${type}.email 'your@email.com'"
     echo "  git config --global pair.${type}.name 'Your Name'"
+    echo "  git config --global pair.${user}.email 'your@email.com'"
+    echo "  git config --global pair.${user}.name 'Your Name'"
   fi
 }
 
