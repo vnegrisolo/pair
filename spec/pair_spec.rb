@@ -33,10 +33,8 @@ RSpec.describe 'pair', type: :shell do
     subject { shell.run 'pair', 'reset' }
 
     it 'resets pair config' do
-      shell.allow(:git).with('config --global --unset pair.author.name')
-      shell.allow(:git).with('config --global --unset pair.author.email')
-      shell.allow(:git).with('config --global --unset pair.committer.name')
-      shell.allow(:git).with('config --global --unset pair.committer.email')
+      shell.allow(:git).with('config --global --remove-section pair.author')
+      shell.allow(:git).with('config --global --remove-section pair.committer')
     end
   end
 
