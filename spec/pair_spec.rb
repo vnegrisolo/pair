@@ -32,9 +32,20 @@ RSpec.describe 'pair', type: :shell do
   describe 'reset' do
     subject { shell.run 'pair', 'reset' }
 
-    it 'resets pair config' do
+    before do
+      shell.export('GIT_AUTHOR_NAME', 'foo')
+      shell.export('GIT_AUTHOR_EMAIL', 'foo')
+      shell.export('GIT_COMMITTER_NAME', 'foo')
+      shell.export('GIT_COMMITTER_EMAIL', 'foo')
       shell.allow(:git).with('config --global --remove-section pair.author')
       shell.allow(:git).with('config --global --remove-section pair.committer')
+    end
+
+    it 'resets pair config' do
+      is_expected.to_not include('GIT_AUTHOR_NAME')
+      is_expected.to_not include('GIT_AUTHOR_EMAIL')
+      is_expected.to_not include('GIT_COMMITTER_NAME')
+      is_expected.to_not include('GIT_COMMITTER_EMAIL')
     end
   end
 
@@ -134,6 +145,10 @@ RSpec.describe 'pair', type: :shell do
         shell.allow(:git).with('config --global --get pair.committer.email')
 
         shell.allow(:git).with('commit --amend')
+        is_expected.to include("GIT_AUTHOR_NAME=\n")
+        is_expected.to include("GIT_AUTHOR_EMAIL=\n")
+        is_expected.to include("GIT_COMMITTER_NAME=\n")
+        is_expected.to include("GIT_COMMITTER_EMAIL=\n")
       end
     end
 
@@ -147,6 +162,10 @@ RSpec.describe 'pair', type: :shell do
         shell.allow(:git).with('config --global --get pair.committer.email')
 
         shell.allow(:git).with('commit --amend')
+        is_expected.to include("GIT_AUTHOR_NAME=Bill Jr\n")
+        is_expected.to include("GIT_AUTHOR_EMAIL=bill@mail.com\n")
+        is_expected.to include("GIT_COMMITTER_NAME=\n")
+        is_expected.to include("GIT_COMMITTER_EMAIL=\n")
       end
     end
 
@@ -167,6 +186,10 @@ RSpec.describe 'pair', type: :shell do
         shell.allow(:git).with('config --global pair.author.email karen@mail.com')
         shell.allow(:git).with('config --global pair.committer.name Bill Jr')
         shell.allow(:git).with('config --global pair.committer.email bill@mail.com')
+        is_expected.to include("GIT_AUTHOR_NAME=Bill Jr\n")
+        is_expected.to include("GIT_AUTHOR_EMAIL=bill@mail.com\n")
+        is_expected.to include("GIT_COMMITTER_NAME=Karen Bright\n")
+        is_expected.to include("GIT_COMMITTER_EMAIL=karen@mail.com\n")
       end
     end
   end
