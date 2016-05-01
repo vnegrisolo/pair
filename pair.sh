@@ -80,7 +80,7 @@ pair_commit() {
 
   git "$@"
 
-  if [ -n "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_COMMITTER_EMAIL" ]; then
+  if [ $? -eq 0 ] && [ -n "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_COMMITTER_EMAIL" ]; then
     pair_set "author" "$GIT_COMMITTER_EMAIL" "$GIT_COMMITTER_NAME"
     pair_set "committer" "$GIT_AUTHOR_EMAIL" "$GIT_AUTHOR_NAME"
   fi
