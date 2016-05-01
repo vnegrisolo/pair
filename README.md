@@ -14,16 +14,6 @@ git clone git@github.com:vnegrisolo/pair.git ~/.functions/pair
 echo "source ~/.functions/pair/pair.sh" >> ~/.bashrc
 ```
 
-## Status
-
-```bash
-pair
-```
-
-prints something like:
-
-<img width="280" alt="screen shot 2016-04-18 at 9 16 26 pm" src="https://cloud.githubusercontent.com/assets/1071893/14624684/e8f405b2-05aa-11e6-8c07-35aa42b62817.png">
-
 ## Configure
 
 `pair` accepts github users and fetch your **name** and **email** from:
@@ -46,6 +36,24 @@ ERROR => You need to set Name and Email for user_with_no_email on Github, or run
   git config --global pair.your-user.name 'Your Name'
 ```
 
+## Commit
+
+`pair` calls git in order to commit with all the params you wish and swaps **author** and **committer** for every commit.
+
+```bash
+pair commit -m 'Something changed'
+```
+
+## Status
+
+```bash
+pair
+```
+
+prints something like:
+
+<img width="299" alt="screen shot 2016-04-30 at 9 06 03 pm" src="https://cloud.githubusercontent.com/assets/1071893/14939493/65c4840c-0f17-11e6-8414-5b2a77351f42.png">
+
 ### Ignore github
 
 If you don't want to use github users you can create your own config file by:
@@ -66,14 +74,6 @@ Create a file `~/.gitconfig.pair` as:
 [pair "another-user"]
   email = another@email.com
   name = Another Name
-```
-
-## Commit
-
-`pair` calls git in order to commit with all the params you wish and swaps **author** and **committer** for every commit.
-
-```bash
-pair commit -m 'Something changed'
 ```
 
 ## Reset

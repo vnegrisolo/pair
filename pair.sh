@@ -1,8 +1,8 @@
 #!/bin/sh
 
 RED="$(tput setaf 1)"
-MAGENTA="$(tput setaf 5)"
-CYAN="$(tput setaf 6)"
+GREEN="$(tput setaf 2)"
+BLUE="$(tput setaf 4)"
 RESET="$(tput sgr0)"
 
 GITHUB_API='https://api.github.com'
@@ -38,8 +38,10 @@ pair_status() {
   author="$(pair_get author.name) <$(pair_get author.email)>"
   committer="$(pair_get committer.name) <$(pair_get committer.email)>"
 
-  echo "Author    => ${CYAN}${author}${RESET}"
-  echo "Committer => ${MAGENTA}${committer}${RESET}"
+  echo "Author    => ${GREEN}${author}${RESET}"
+  echo "Committer => ${BLUE}${committer}${RESET}"
+  echo "Last 10 commits:"
+  git log -10 --pretty=format:"%h => %Cgreen%an %Creset=> %Cblue%cn %Creset=> %s"
 }
 
 pair_configure() {
