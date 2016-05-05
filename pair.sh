@@ -23,10 +23,7 @@ pair_set() {
 }
 
 pair_reset() {
-  unset GIT_AUTHOR_NAME
-  unset GIT_AUTHOR_EMAIL
-  unset GIT_COMMITTER_NAME
-  unset GIT_COMMITTER_EMAIL
+  unset GIT_{AUTHOR,COMMITTER}_{EMAIL,NAME}
 
   git config --global --remove-section pair.author &> /dev/null
   git config --global --remove-section pair.committer &> /dev/null
