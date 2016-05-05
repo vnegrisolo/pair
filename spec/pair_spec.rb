@@ -61,17 +61,41 @@ RSpec.describe 'pair', type: :shell do
     context 'when the user does not have email or name' do
       subject { shell.run 'pair', 'bob' }
 
-      it 'call git commit with same params' do
+      before do
         shell.allow(:git).with('config --global --get pair.bob.name')
         shell.allow(:git).with('config --global --get pair.bob.email')
+      end
 
-        shell.allow(:curl).with('https://api.github.com/users/bob')
-          .and_return(fixture(:github_user_bob_incomplete))
+      context 'when user does not have email/name on github' do
+        before do
+          shell.allow(:curl).with('https://api.github.com/users/bob')
+            .and_return(fixture(:github_user_bob_incomplete))
+        end
 
-        is_expected.to include('ERROR')
-        is_expected.to include('You need to set Name and Email for bob on Github, or run manually:')
-        is_expected.to include("git config --global pair.author.name 'Your Name'")
-        is_expected.to include("git config --global pair.author.email 'your@email.com'")
+        context 'when the user types email/name' do
+          before { shell.type 'bob@mail.com', 'Bob' }
+
+          it 'call git commit with same params' do
+            shell.allow(:git).with('config --global pair.bob.name Bob')
+            shell.allow(:git).with('config --global pair.bob.email bob@mail.com')
+            shell.allow(:git).with('config --global pair.author.name Bob')
+            shell.allow(:git).with('config --global pair.author.email bob@mail.com')
+          end
+        end
+
+        context 'when the user does not type email/name' do
+          before { shell.type '', '' }
+
+          it 'call git commit with same params' do
+            shell.allow(:git).with('config --global pair.bob.name Bob')
+            shell.allow(:git).with('config --global pair.bob.email bob@mail.com')
+            shell.allow(:git).with('config --global pair.author.name Bob')
+            shell.allow(:git).with('config --global pair.author.email bob@mail.com')
+
+            is_expected.to include('ERROR')
+            is_expected.to include('You need to set Name and Email for bob')
+          end
+        end
       end
     end
 
