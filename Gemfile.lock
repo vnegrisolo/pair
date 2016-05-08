@@ -1,0 +1,33 @@
+GIT
+  remote: git://github.com/vnegrisolo/rspec-shell.git
+  revision: 6e1ce50675686b624d80ab19bfbfafbe61e3e2f8
+  specs:
+    rspec-shell (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    diff-lcs (1.2.5)
+    rspec (3.4.0)
+      rspec-core (~> 3.4.0)
+      rspec-expectations (~> 3.4.0)
+      rspec-mocks (~> 3.4.0)
+    rspec-core (3.4.4)
+      rspec-support (~> 3.4.0)
+    rspec-expectations (3.4.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-mocks (3.4.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.4.0)
+    rspec-support (3.4.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rspec
+  rspec-shell!
+
+BUNDLED WITH
+   1.11.2
