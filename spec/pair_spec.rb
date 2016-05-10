@@ -2,8 +2,6 @@ require 'spec_helper'
 
 RSpec.describe 'pair', type: :shell do
 
-  let(:shell) { mock(:curl, :git) }
-
   after do
     is_expected.to_not include('Should Be Mocked')
   end
