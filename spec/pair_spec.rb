@@ -2,10 +2,6 @@ require 'spec_helper'
 
 RSpec.describe 'pair', type: :shell do
 
-  after do
-    is_expected.to_not include('Should Be Mocked')
-  end
-
   describe 'status' do
     subject { shell.run 'pair' }
 
