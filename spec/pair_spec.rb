@@ -2,6 +2,8 @@ require 'spec_helper'
 
 RSpec.describe 'pair', type: :shell do
 
+  before { shell.load 'pair.sh' }
+
   describe 'status' do
     subject { shell.run 'pair' }
 
