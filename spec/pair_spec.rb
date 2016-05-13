@@ -26,7 +26,7 @@ RSpec.describe 'pair', type: :shell do
   end
 
   describe 'reset' do
-    subject { shell.run 'pair', 'reset' }
+    subject { shell.run 'pair reset' }
 
     before do
       shell.export('GIT_AUTHOR_NAME', 'foo')
@@ -55,7 +55,7 @@ RSpec.describe 'pair', type: :shell do
     end
 
     context 'when the user does not have email or name' do
-      subject { shell.run 'pair', 'bob' }
+      subject { shell.run 'pair bob' }
 
       before do
         shell.allow(:git).with('config --global --get pair.bob.name')
@@ -96,7 +96,7 @@ RSpec.describe 'pair', type: :shell do
     end
 
     context 'when the user has set the email and name already' do
-      subject { shell.run 'pair', 'bill' }
+      subject { shell.run 'pair bill' }
 
       it 'call git commit with same params' do
         shell.allow(:git).with('config --global --get pair.bill.name')
@@ -112,7 +112,7 @@ RSpec.describe 'pair', type: :shell do
     end
 
     context 'when pair is set with just one user' do
-      subject { shell.run 'pair', 'bill' }
+      subject { shell.run 'pair bill' }
 
       it 'call git commit with same params' do
         shell.allow(:git).with('config --global --get pair.bill.name')
@@ -129,7 +129,7 @@ RSpec.describe 'pair', type: :shell do
     end
 
     context 'when pair is set with two users' do
-      subject { shell.run 'pair', 'bill karen' }
+      subject { shell.run 'pair bill karen' }
 
       it 'call git commit with same params' do
         shell.allow(:git).with('config --global --get pair.bill.name')
@@ -155,7 +155,7 @@ RSpec.describe 'pair', type: :shell do
   end
 
   describe 'proxy commits' do
-    subject { shell.run 'pair', 'commit --amend' }
+    subject { shell.run 'pair commit --amend' }
 
     context 'when no pair is set yet' do
       it 'call git commit with same params' do
