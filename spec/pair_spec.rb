@@ -8,15 +8,15 @@ RSpec.describe 'pair', type: :shell do
     subject { shell.run 'pair' }
 
     it 'prints the author and committer' do
-      shell.allow(:git).with('config --global --get pair.author.name')
+      shell.expect(:git).with('config --global --get pair.author.name')
         .and_return('Bill Jr')
-      shell.allow(:git).with('config --global --get pair.author.email')
+      shell.expect(:git).with('config --global --get pair.author.email')
         .and_return('bill@mail.com')
-      shell.allow(:git).with('config --global --get pair.committer.name')
+      shell.expect(:git).with('config --global --get pair.committer.name')
         .and_return('Karen Bright')
-      shell.allow(:git).with('config --global --get pair.committer.email')
+      shell.expect(:git).with('config --global --get pair.committer.email')
         .and_return('karen@mail.com')
-      shell.allow(:git).with('log -10 --pretty=format:%h => %Cgreen%an %Creset=> %Cblue%cn %Creset=> %s')
+      shell.expect(:git).with('log -10 --pretty=format:%h => %Cgreen%an %Creset=> %Cblue%cn %Creset=> %s')
 
       is_expected.to include('Author    =>')
       is_expected.to include('Bill Jr <bill@mail.com>')
@@ -33,8 +33,8 @@ RSpec.describe 'pair', type: :shell do
       shell.export('GIT_AUTHOR_EMAIL', 'foo')
       shell.export('GIT_COMMITTER_NAME', 'foo')
       shell.export('GIT_COMMITTER_EMAIL', 'foo')
-      shell.allow(:git).with('config --global --remove-section pair.author')
-      shell.allow(:git).with('config --global --remove-section pair.committer')
+      shell.expect(:git).with('config --global --remove-section pair.author')
+      shell.expect(:git).with('config --global --remove-section pair.committer')
     end
 
     it 'resets pair config' do
@@ -48,23 +48,23 @@ RSpec.describe 'pair', type: :shell do
   describe 'confirure' do
 
     before do
-      shell.allow(:git).with('config --global --unset pair.author.name')
-      shell.allow(:git).with('config --global --unset pair.author.email')
-      shell.allow(:git).with('config --global --unset pair.committer.name')
-      shell.allow(:git).with('config --global --unset pair.committer.email')
+      shell.expect(:git).with('config --global --unset pair.author.name')
+      shell.expect(:git).with('config --global --unset pair.author.email')
+      shell.expect(:git).with('config --global --unset pair.committer.name')
+      shell.expect(:git).with('config --global --unset pair.committer.email')
     end
 
     context 'when the user does not have email or name' do
       subject { shell.run 'pair bob' }
 
       before do
-        shell.allow(:git).with('config --global --get pair.bob.name')
-        shell.allow(:git).with('config --global --get pair.bob.email')
+        shell.expect(:git).with('config --global --get pair.bob.name')
+        shell.expect(:git).with('config --global --get pair.bob.email')
       end
 
       context 'when user does not have email/name on github' do
         before do
-          shell.allow(:curl).with('https://api.github.com/users/bob')
+          shell.expect(:curl).with('https://api.github.com/users/bob')
             .and_return(fixture(:github_user_bob_incomplete))
         end
 
@@ -72,10 +72,10 @@ RSpec.describe 'pair', type: :shell do
           before { shell.type 'bob@mail.com', 'Bob' }
 
           it 'call git commit with same params' do
-            shell.allow(:git).with('config --global pair.bob.name Bob')
-            shell.allow(:git).with('config --global pair.bob.email bob@mail.com')
-            shell.allow(:git).with('config --global pair.author.name Bob')
-            shell.allow(:git).with('config --global pair.author.email bob@mail.com')
+            shell.expect(:git).with('config --global pair.bob.name Bob')
+            shell.expect(:git).with('config --global pair.bob.email bob@mail.com')
+            shell.expect(:git).with('config --global pair.author.name Bob')
+            shell.expect(:git).with('config --global pair.author.email bob@mail.com')
           end
         end
 
@@ -83,10 +83,10 @@ RSpec.describe 'pair', type: :shell do
           before { shell.type '', '' }
 
           it 'call git commit with same params' do
-            shell.allow(:git).with('config --global pair.bob.name Bob')
-            shell.allow(:git).with('config --global pair.bob.email bob@mail.com')
-            shell.allow(:git).with('config --global pair.author.name Bob')
-            shell.allow(:git).with('config --global pair.author.email bob@mail.com')
+            shell.expect(:git).with('config --global pair.bob.name Bob')
+            shell.expect(:git).with('config --global pair.bob.email bob@mail.com')
+            shell.expect(:git).with('config --global pair.author.name Bob')
+            shell.expect(:git).with('config --global pair.author.email bob@mail.com')
 
             is_expected.to include('ERROR')
             is_expected.to include('You need to set Name and Email for bob')
@@ -99,15 +99,15 @@ RSpec.describe 'pair', type: :shell do
       subject { shell.run 'pair bill' }
 
       it 'call git commit with same params' do
-        shell.allow(:git).with('config --global --get pair.bill.name')
+        shell.expect(:git).with('config --global --get pair.bill.name')
           .and_return('Bill Jr')
-        shell.allow(:git).with('config --global --get pair.bill.email')
+        shell.expect(:git).with('config --global --get pair.bill.email')
           .and_return('bill@mail.com')
 
-        shell.allow(:git).with('config --global pair.bill.name Bill Jr')
-        shell.allow(:git).with('config --global pair.bill.email bill@mail.com')
-        shell.allow(:git).with('config --global pair.author.name Bill Jr')
-        shell.allow(:git).with('config --global pair.author.email bill@mail.com')
+        shell.expect(:git).with('config --global pair.bill.name Bill Jr')
+        shell.expect(:git).with('config --global pair.bill.email bill@mail.com')
+        shell.expect(:git).with('config --global pair.author.name Bill Jr')
+        shell.expect(:git).with('config --global pair.author.email bill@mail.com')
       end
     end
 
@@ -115,16 +115,16 @@ RSpec.describe 'pair', type: :shell do
       subject { shell.run 'pair bill' }
 
       it 'call git commit with same params' do
-        shell.allow(:git).with('config --global --get pair.bill.name')
-        shell.allow(:git).with('config --global --get pair.bill.email')
+        shell.expect(:git).with('config --global --get pair.bill.name')
+        shell.expect(:git).with('config --global --get pair.bill.email')
 
-        shell.allow(:curl).with('https://api.github.com/users/bill')
+        shell.expect(:curl).with('https://api.github.com/users/bill')
           .and_return(fixture(:github_user_bill))
 
-        shell.allow(:git).with('config --global pair.bill.name Bill Jr')
-        shell.allow(:git).with('config --global pair.bill.email bill@mail.com')
-        shell.allow(:git).with('config --global pair.author.name Bill Jr')
-        shell.allow(:git).with('config --global pair.author.email bill@mail.com')
+        shell.expect(:git).with('config --global pair.bill.name Bill Jr')
+        shell.expect(:git).with('config --global pair.bill.email bill@mail.com')
+        shell.expect(:git).with('config --global pair.author.name Bill Jr')
+        shell.expect(:git).with('config --global pair.author.email bill@mail.com')
       end
     end
 
@@ -132,24 +132,24 @@ RSpec.describe 'pair', type: :shell do
       subject { shell.run 'pair bill karen' }
 
       it 'call git commit with same params' do
-        shell.allow(:git).with('config --global --get pair.bill.name')
-        shell.allow(:git).with('config --global --get pair.bill.email')
-        shell.allow(:git).with('config --global --get pair.karen.name')
-        shell.allow(:git).with('config --global --get pair.karen.email')
+        shell.expect(:git).with('config --global --get pair.bill.name')
+        shell.expect(:git).with('config --global --get pair.bill.email')
+        shell.expect(:git).with('config --global --get pair.karen.name')
+        shell.expect(:git).with('config --global --get pair.karen.email')
 
-        shell.allow(:curl).with('https://api.github.com/users/bill')
+        shell.expect(:curl).with('https://api.github.com/users/bill')
           .and_return(fixture(:github_user_bill))
-        shell.allow(:curl).with('https://api.github.com/users/karen')
+        shell.expect(:curl).with('https://api.github.com/users/karen')
           .and_return(fixture(:github_user_karen))
 
-        shell.allow(:git).with('config --global pair.bill.name Bill Jr')
-        shell.allow(:git).with('config --global pair.bill.email bill@mail.com')
-        shell.allow(:git).with('config --global pair.author.name Bill Jr')
-        shell.allow(:git).with('config --global pair.author.email bill@mail.com')
-        shell.allow(:git).with('config --global pair.karen.name Karen Bright')
-        shell.allow(:git).with('config --global pair.karen.email karen@mail.com')
-        shell.allow(:git).with('config --global pair.committer.name Karen Bright')
-        shell.allow(:git).with('config --global pair.committer.email karen@mail.com')
+        shell.expect(:git).with('config --global pair.bill.name Bill Jr')
+        shell.expect(:git).with('config --global pair.bill.email bill@mail.com')
+        shell.expect(:git).with('config --global pair.author.name Bill Jr')
+        shell.expect(:git).with('config --global pair.author.email bill@mail.com')
+        shell.expect(:git).with('config --global pair.karen.name Karen Bright')
+        shell.expect(:git).with('config --global pair.karen.email karen@mail.com')
+        shell.expect(:git).with('config --global pair.committer.name Karen Bright')
+        shell.expect(:git).with('config --global pair.committer.email karen@mail.com')
       end
     end
   end
@@ -159,12 +159,12 @@ RSpec.describe 'pair', type: :shell do
 
     context 'when no pair is set yet' do
       it 'call git commit with same params' do
-        shell.allow(:git).with('config --global --get pair.author.name')
-        shell.allow(:git).with('config --global --get pair.author.email')
-        shell.allow(:git).with('config --global --get pair.committer.name')
-        shell.allow(:git).with('config --global --get pair.committer.email')
+        shell.expect(:git).with('config --global --get pair.author.name')
+        shell.expect(:git).with('config --global --get pair.author.email')
+        shell.expect(:git).with('config --global --get pair.committer.name')
+        shell.expect(:git).with('config --global --get pair.committer.email')
 
-        shell.allow(:git).with('commit --amend')
+        shell.expect(:git).with('commit --amend')
         is_expected.to include("GIT_AUTHOR_NAME=\n")
         is_expected.to include("GIT_AUTHOR_EMAIL=\n")
         is_expected.to include("GIT_COMMITTER_NAME=\n")
@@ -174,14 +174,14 @@ RSpec.describe 'pair', type: :shell do
 
     context 'when pair is actually is set with one person' do
       it 'call git commit with same params' do
-        shell.allow(:git).with('config --global --get pair.author.name')
+        shell.expect(:git).with('config --global --get pair.author.name')
           .and_return('Bill Jr')
-        shell.allow(:git).with('config --global --get pair.author.email')
+        shell.expect(:git).with('config --global --get pair.author.email')
           .and_return('bill@mail.com')
-        shell.allow(:git).with('config --global --get pair.committer.name')
-        shell.allow(:git).with('config --global --get pair.committer.email')
+        shell.expect(:git).with('config --global --get pair.committer.name')
+        shell.expect(:git).with('config --global --get pair.committer.email')
 
-        shell.allow(:git).with('commit --amend')
+        shell.expect(:git).with('commit --amend')
         is_expected.to include("GIT_AUTHOR_NAME=Bill Jr\n")
         is_expected.to include("GIT_AUTHOR_EMAIL=bill@mail.com\n")
         is_expected.to include("GIT_COMMITTER_NAME=\n")
@@ -191,21 +191,21 @@ RSpec.describe 'pair', type: :shell do
 
     context 'when pair is actually is set with two people' do
       it 'call git commit with same params' do
-        shell.allow(:git).with('config --global --get pair.author.name')
+        shell.expect(:git).with('config --global --get pair.author.name')
           .and_return('Bill Jr')
-        shell.allow(:git).with('config --global --get pair.author.email')
+        shell.expect(:git).with('config --global --get pair.author.email')
           .and_return('bill@mail.com')
-        shell.allow(:git).with('config --global --get pair.committer.name')
+        shell.expect(:git).with('config --global --get pair.committer.name')
           .and_return('Karen Bright')
-        shell.allow(:git).with('config --global --get pair.committer.email')
+        shell.expect(:git).with('config --global --get pair.committer.email')
           .and_return('karen@mail.com')
 
-        shell.allow(:git).with('commit --amend')
+        shell.expect(:git).with('commit --amend')
 
-        shell.allow(:git).with('config --global pair.author.name Karen Bright')
-        shell.allow(:git).with('config --global pair.author.email karen@mail.com')
-        shell.allow(:git).with('config --global pair.committer.name Bill Jr')
-        shell.allow(:git).with('config --global pair.committer.email bill@mail.com')
+        shell.expect(:git).with('config --global pair.author.name Karen Bright')
+        shell.expect(:git).with('config --global pair.author.email karen@mail.com')
+        shell.expect(:git).with('config --global pair.committer.name Bill Jr')
+        shell.expect(:git).with('config --global pair.committer.email bill@mail.com')
         is_expected.to include("GIT_AUTHOR_NAME=Bill Jr\n")
         is_expected.to include("GIT_AUTHOR_EMAIL=bill@mail.com\n")
         is_expected.to include("GIT_COMMITTER_NAME=Karen Bright\n")
