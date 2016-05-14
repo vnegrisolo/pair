@@ -4,19 +4,18 @@ RSpec.describe 'pair', type: :shell do
 
   before { shell.load 'pair.sh' }
 
+  let(:git_mock) { shell.expect(:git) }
+  let(:curl_mock) { shell.expect(:curl) }
+
   describe 'status' do
     subject { shell.run 'pair' }
 
     it 'prints the author and committer' do
-      shell.expect(:git).with('config --global --get pair.author.name')
-        .and_return('Bill Jr')
-      shell.expect(:git).with('config --global --get pair.author.email')
-        .and_return('bill@mail.com')
-      shell.expect(:git).with('config --global --get pair.committer.name')
-        .and_return('Karen Bright')
-      shell.expect(:git).with('config --global --get pair.committer.email')
-        .and_return('karen@mail.com')
-      shell.expect(:git).with('log -10 --pretty=format:%h => %Cgreen%an %Creset=> %Cblue%cn %Creset=> %s')
+      git_mock.with('config --global --get pair.author.name').and_return('Bill Jr')
+      git_mock.with('config --global --get pair.author.email').and_return('bill@mail.com')
+      git_mock.with('config --global --get pair.committer.name').and_return('Karen Bright')
+      git_mock.with('config --global --get pair.committer.email').and_return('karen@mail.com')
+      git_mock.with('log -10 --pretty=format:%h => %Cgreen%an %Creset=> %Cblue%cn %Creset=> %s')
 
       is_expected.to include('Author    =>')
       is_expected.to include('Bill Jr <bill@mail.com>')
@@ -33,11 +32,12 @@ RSpec.describe 'pair', type: :shell do
       shell.export('GIT_AUTHOR_EMAIL', 'foo')
       shell.export('GIT_COMMITTER_NAME', 'foo')
       shell.export('GIT_COMMITTER_EMAIL', 'foo')
-      shell.expect(:git).with('config --global --remove-section pair.author')
-      shell.expect(:git).with('config --global --remove-section pair.committer')
     end
 
     it 'resets pair config' do
+      git_mock.with('config --global --remove-section pair.author')
+      git_mock.with('config --global --remove-section pair.committer')
+
       is_expected.to_not include('GIT_AUTHOR_NAME')
       is_expected.to_not include('GIT_AUTHOR_EMAIL')
       is_expected.to_not include('GIT_COMMITTER_NAME')
@@ -46,25 +46,24 @@ RSpec.describe 'pair', type: :shell do
   end
 
   describe 'confirure' do
-
     before do
-      shell.expect(:git).with('config --global --unset pair.author.name')
-      shell.expect(:git).with('config --global --unset pair.author.email')
-      shell.expect(:git).with('config --global --unset pair.committer.name')
-      shell.expect(:git).with('config --global --unset pair.committer.email')
+      git_mock.with('config --global --unset pair.author.name')
+      git_mock.with('config --global --unset pair.author.email')
+      git_mock.with('config --global --unset pair.committer.name')
+      git_mock.with('config --global --unset pair.committer.email')
     end
 
     context 'when the user does not have email or name' do
       subject { shell.run 'pair bob' }
 
       before do
-        shell.expect(:git).with('config --global --get pair.bob.name')
-        shell.expect(:git).with('config --global --get pair.bob.email')
+        git_mock.with('config --global --get pair.bob.name')
+        git_mock.with('config --global --get pair.bob.email')
       end
 
       context 'when user does not have email/name on github' do
         before do
-          shell.expect(:curl).with('https://api.github.com/users/bob')
+          curl_mock.with('https://api.github.com/users/bob')
             .and_return(fixture(:github_user_bob_incomplete))
         end
 
@@ -72,10 +71,10 @@ RSpec.describe 'pair', type: :shell do
           before { shell.type 'bob@mail.com', 'Bob' }
 
           it 'call git commit with same params' do
-            shell.expect(:git).with('config --global pair.bob.name Bob')
-            shell.expect(:git).with('config --global pair.bob.email bob@mail.com')
-            shell.expect(:git).with('config --global pair.author.name Bob')
-            shell.expect(:git).with('config --global pair.author.email bob@mail.com')
+            git_mock.with('config --global pair.bob.name Bob')
+            git_mock.with('config --global pair.bob.email bob@mail.com')
+            git_mock.with('config --global pair.author.name Bob')
+            git_mock.with('config --global pair.author.email bob@mail.com')
           end
         end
 
@@ -83,11 +82,6 @@ RSpec.describe 'pair', type: :shell do
           before { shell.type '', '' }
 
           it 'call git commit with same params' do
-            shell.expect(:git).with('config --global pair.bob.name Bob')
-            shell.expect(:git).with('config --global pair.bob.email bob@mail.com')
-            shell.expect(:git).with('config --global pair.author.name Bob')
-            shell.expect(:git).with('config --global pair.author.email bob@mail.com')
-
             is_expected.to include('ERROR')
             is_expected.to include('You need to set Name and Email for bob')
           end
@@ -95,19 +89,17 @@ RSpec.describe 'pair', type: :shell do
       end
     end
 
-    context 'when the user has set the email and name already' do
+    context 'when the user has cached email and name' do
       subject { shell.run 'pair bill' }
 
       it 'call git commit with same params' do
-        shell.expect(:git).with('config --global --get pair.bill.name')
-          .and_return('Bill Jr')
-        shell.expect(:git).with('config --global --get pair.bill.email')
-          .and_return('bill@mail.com')
+        git_mock.with('config --global --get pair.bill.name').and_return('Bill Jr')
+        git_mock.with('config --global --get pair.bill.email').and_return('bill@mail.com')
 
-        shell.expect(:git).with('config --global pair.bill.name Bill Jr')
-        shell.expect(:git).with('config --global pair.bill.email bill@mail.com')
-        shell.expect(:git).with('config --global pair.author.name Bill Jr')
-        shell.expect(:git).with('config --global pair.author.email bill@mail.com')
+        git_mock.with('config --global pair.bill.name Bill Jr')
+        git_mock.with('config --global pair.bill.email bill@mail.com')
+        git_mock.with('config --global pair.author.name Bill Jr')
+        git_mock.with('config --global pair.author.email bill@mail.com')
       end
     end
 
@@ -115,16 +107,16 @@ RSpec.describe 'pair', type: :shell do
       subject { shell.run 'pair bill' }
 
       it 'call git commit with same params' do
-        shell.expect(:git).with('config --global --get pair.bill.name')
-        shell.expect(:git).with('config --global --get pair.bill.email')
+        git_mock.with('config --global --get pair.bill.name')
+        git_mock.with('config --global --get pair.bill.email')
 
-        shell.expect(:curl).with('https://api.github.com/users/bill')
+        curl_mock.with('https://api.github.com/users/bill')
           .and_return(fixture(:github_user_bill))
 
-        shell.expect(:git).with('config --global pair.bill.name Bill Jr')
-        shell.expect(:git).with('config --global pair.bill.email bill@mail.com')
-        shell.expect(:git).with('config --global pair.author.name Bill Jr')
-        shell.expect(:git).with('config --global pair.author.email bill@mail.com')
+        git_mock.with('config --global pair.bill.name Bill Jr')
+        git_mock.with('config --global pair.bill.email bill@mail.com')
+        git_mock.with('config --global pair.author.name Bill Jr')
+        git_mock.with('config --global pair.author.email bill@mail.com')
       end
     end
 
@@ -132,24 +124,24 @@ RSpec.describe 'pair', type: :shell do
       subject { shell.run 'pair bill karen' }
 
       it 'call git commit with same params' do
-        shell.expect(:git).with('config --global --get pair.bill.name')
-        shell.expect(:git).with('config --global --get pair.bill.email')
-        shell.expect(:git).with('config --global --get pair.karen.name')
-        shell.expect(:git).with('config --global --get pair.karen.email')
+        git_mock.with('config --global --get pair.bill.name')
+        git_mock.with('config --global --get pair.bill.email')
+        git_mock.with('config --global --get pair.karen.name')
+        git_mock.with('config --global --get pair.karen.email')
 
-        shell.expect(:curl).with('https://api.github.com/users/bill')
+        curl_mock.with('https://api.github.com/users/bill')
           .and_return(fixture(:github_user_bill))
-        shell.expect(:curl).with('https://api.github.com/users/karen')
+        curl_mock.with('https://api.github.com/users/karen')
           .and_return(fixture(:github_user_karen))
 
-        shell.expect(:git).with('config --global pair.bill.name Bill Jr')
-        shell.expect(:git).with('config --global pair.bill.email bill@mail.com')
-        shell.expect(:git).with('config --global pair.author.name Bill Jr')
-        shell.expect(:git).with('config --global pair.author.email bill@mail.com')
-        shell.expect(:git).with('config --global pair.karen.name Karen Bright')
-        shell.expect(:git).with('config --global pair.karen.email karen@mail.com')
-        shell.expect(:git).with('config --global pair.committer.name Karen Bright')
-        shell.expect(:git).with('config --global pair.committer.email karen@mail.com')
+        git_mock.with('config --global pair.bill.name Bill Jr')
+        git_mock.with('config --global pair.bill.email bill@mail.com')
+        git_mock.with('config --global pair.author.name Bill Jr')
+        git_mock.with('config --global pair.author.email bill@mail.com')
+        git_mock.with('config --global pair.karen.name Karen Bright')
+        git_mock.with('config --global pair.karen.email karen@mail.com')
+        git_mock.with('config --global pair.committer.name Karen Bright')
+        git_mock.with('config --global pair.committer.email karen@mail.com')
       end
     end
   end
@@ -159,12 +151,12 @@ RSpec.describe 'pair', type: :shell do
 
     context 'when no pair is set yet' do
       it 'call git commit with same params' do
-        shell.expect(:git).with('config --global --get pair.author.name')
-        shell.expect(:git).with('config --global --get pair.author.email')
-        shell.expect(:git).with('config --global --get pair.committer.name')
-        shell.expect(:git).with('config --global --get pair.committer.email')
+        git_mock.with('config --global --get pair.author.name')
+        git_mock.with('config --global --get pair.author.email')
+        git_mock.with('config --global --get pair.committer.name')
+        git_mock.with('config --global --get pair.committer.email')
 
-        shell.expect(:git).with('commit --amend')
+        git_mock.with('commit --amend')
         is_expected.to include("GIT_AUTHOR_NAME=\n")
         is_expected.to include("GIT_AUTHOR_EMAIL=\n")
         is_expected.to include("GIT_COMMITTER_NAME=\n")
@@ -174,14 +166,12 @@ RSpec.describe 'pair', type: :shell do
 
     context 'when pair is actually is set with one person' do
       it 'call git commit with same params' do
-        shell.expect(:git).with('config --global --get pair.author.name')
-          .and_return('Bill Jr')
-        shell.expect(:git).with('config --global --get pair.author.email')
-          .and_return('bill@mail.com')
-        shell.expect(:git).with('config --global --get pair.committer.name')
-        shell.expect(:git).with('config --global --get pair.committer.email')
+        git_mock.with('config --global --get pair.author.name').and_return('Bill Jr')
+        git_mock.with('config --global --get pair.author.email').and_return('bill@mail.com')
+        git_mock.with('config --global --get pair.committer.name')
+        git_mock.with('config --global --get pair.committer.email')
 
-        shell.expect(:git).with('commit --amend')
+        git_mock.with('commit --amend')
         is_expected.to include("GIT_AUTHOR_NAME=Bill Jr\n")
         is_expected.to include("GIT_AUTHOR_EMAIL=bill@mail.com\n")
         is_expected.to include("GIT_COMMITTER_NAME=\n")
@@ -191,21 +181,17 @@ RSpec.describe 'pair', type: :shell do
 
     context 'when pair is actually is set with two people' do
       it 'call git commit with same params' do
-        shell.expect(:git).with('config --global --get pair.author.name')
-          .and_return('Bill Jr')
-        shell.expect(:git).with('config --global --get pair.author.email')
-          .and_return('bill@mail.com')
-        shell.expect(:git).with('config --global --get pair.committer.name')
-          .and_return('Karen Bright')
-        shell.expect(:git).with('config --global --get pair.committer.email')
-          .and_return('karen@mail.com')
+        git_mock.with('config --global --get pair.author.name').and_return('Bill Jr')
+        git_mock.with('config --global --get pair.author.email').and_return('bill@mail.com')
+        git_mock.with('config --global --get pair.committer.name').and_return('Karen Bright')
+        git_mock.with('config --global --get pair.committer.email').and_return('karen@mail.com')
 
-        shell.expect(:git).with('commit --amend')
+        git_mock.with('commit --amend')
 
-        shell.expect(:git).with('config --global pair.author.name Karen Bright')
-        shell.expect(:git).with('config --global pair.author.email karen@mail.com')
-        shell.expect(:git).with('config --global pair.committer.name Bill Jr')
-        shell.expect(:git).with('config --global pair.committer.email bill@mail.com')
+        git_mock.with('config --global pair.author.name Karen Bright')
+        git_mock.with('config --global pair.author.email karen@mail.com')
+        git_mock.with('config --global pair.committer.name Bill Jr')
+        git_mock.with('config --global pair.committer.email bill@mail.com')
         is_expected.to include("GIT_AUTHOR_NAME=Bill Jr\n")
         is_expected.to include("GIT_AUTHOR_EMAIL=bill@mail.com\n")
         is_expected.to include("GIT_COMMITTER_NAME=Karen Bright\n")
