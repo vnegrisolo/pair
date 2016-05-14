@@ -7,5 +7,5 @@ end
 require 'rspec/shell'
 
 RSpec.configure do |c|
-  c.include Rspec::Shell
+  c.include Rspec::Shell, type: :shell
 end
