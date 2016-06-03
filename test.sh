@@ -23,6 +23,18 @@ echo "change" >> file.md; pair commit -am 'Fifth commit'
 echo "change" >> file.md; pair commit -am 'Sixth commit'
 
 pair
+
+git checkout master;
+pair vnegrisolo
+touch file-new-one.md; git add .; pair commit -am 'Second commit on master'
+echo "change" >> file-new-one.md; pair commit -am 'Third commit on master'
+echo "change" >> file-new-one.md; pair commit -am 'Forth commit on master'
+pair
+git checkout new-feature;
+pair dev1 dev2
+git rebase master
+# --exec "git reset-authors";
+
 echo "reseting"
 pair reset
 pair
