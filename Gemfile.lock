@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/vnegrisolo/rspec-shell.git
-  revision: 19da615fac1eea9c0d255d1a278be58929c792ec
+  revision: cb332ccb9c76a3830a4f0654736bd3acd49f1149
   specs:
     rspec-shell (0.1.0)
 
@@ -30,4 +30,4 @@ DEPENDENCIES
   rspec-shell!
 
 BUNDLED WITH
-   1.12.3
+   1.12.5
