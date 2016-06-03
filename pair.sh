@@ -7,31 +7,15 @@ RESET="$(tput sgr0)"
 
 GITHUB_API='https://api.github.com'
 
-pair_get() {
-  field=${1}
-
-  git config --global --get pair.${field}
-}
-
-pair_set() {
-  type=${1}
-  email=${2}
-  name=${3}
-
-  git config --global pair.${type}.email "$email"
-  git config --global pair.${type}.name "$name"
-}
-
 pair_reset() {
   unset GIT_{AUTHOR,COMMITTER}_{EMAIL,NAME}
 
-  git config --global --remove-section pair.author &> /dev/null
-  git config --global --remove-section pair.committer &> /dev/null
+  git config --remove-section pair &> /dev/null
 }
 
 pair_status() {
-  author="$(pair_get author.name) <$(pair_get author.email)>"
-  committer="$(pair_get committer.name) <$(pair_get committer.email)>"
+  author="$(git config --get pair.author)"
+  committer="$(git config --get pair.committer)"
 
   echo "Author    => ${GREEN}${author}${RESET}"
   echo "Committer => ${BLUE}${committer}${RESET}"
@@ -43,8 +27,8 @@ pair_configure() {
   type=${1}
   user=${2}
 
-  name="$(pair_get ${user}.name)"
-  email="$(pair_get ${user}.email)"
+  name="$(git config --global --get pair.${user}.name)"
+  email="$(git config --global --get pair.${user}.email)"
 
   if [ -z "$name" ] || [ -z "$email" ]; then
     prefix=' *"[a-zA-Z]*": *"\{0,1\}'
@@ -62,24 +46,32 @@ pair_configure() {
   fi
 
   if [ -n "$name" ] && [ -n "$email" ]; then
-    pair_set "$type" "$email" "$name"
-    pair_set "$user" "$email" "$name"
+    git config --global pair.${user}.email "$email"
+    git config --global pair.${user}.name "$name"
+    git config pair.${type} "$user"
   else
     echo "${RED}ERROR${RESET} => You need to set Name and Email for ${user}"
   fi
 }
 
 pair_commit() {
-  export GIT_AUTHOR_NAME="$(pair_get author.name)"
-  export GIT_AUTHOR_EMAIL="$(pair_get author.email)"
-  export GIT_COMMITTER_NAME="$(pair_get committer.name)"
-  export GIT_COMMITTER_EMAIL="$(pair_get committer.email)"
+  author="$(git config --get pair.author)"
+  committer="$(git config --get pair.committer)"
+
+  if [ -n "$author" ]; then
+    export GIT_AUTHOR_NAME="$(git config --global --get pair.${author}.name)"
+    export GIT_AUTHOR_EMAIL="$(git config --global --get pair.${author}.email)"
+  fi
+  if [ -n "$committer" ]; then
+    export GIT_COMMITTER_NAME="$(git config --global --get pair.${committer}.name)"
+    export GIT_COMMITTER_EMAIL="$(git config --global --get pair.${committer}.email)"
+  fi
 
   git "$@"
 
-  if [ $? -eq 0 ] && [ -n "$GIT_COMMITTER_NAME" ] && [ -n "$GIT_COMMITTER_EMAIL" ]; then
-    pair_set "author" "$GIT_COMMITTER_EMAIL" "$GIT_COMMITTER_NAME"
-    pair_set "committer" "$GIT_AUTHOR_EMAIL" "$GIT_AUTHOR_NAME"
+  if [ $? -eq 0 ] && [ -n "$committer" ]; then
+    git config pair.author "$committer"
+    git config pair.committer "$author"
   fi
 }
 
